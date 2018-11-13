@@ -4,7 +4,6 @@ import ch.heig.amt.selenium.pages.*;
 import io.probedock.client.annotations.ProbeTest;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -19,8 +18,6 @@ public class WPTest {
     public void openBrowser() {
         System.setProperty("webdriver.chrome.driver", "/Applications/chromedriver");
         driver = new ChromeDriver();
-
-        itShouldBePossibleToRegister();
     }
 
 
