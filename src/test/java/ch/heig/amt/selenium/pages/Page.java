@@ -31,14 +31,15 @@ public class Page {
         return new UsersPage(driver);
     }
 
-    public Page logout(Class<? extends Page> expectedPageClass) {
+    public LoginPage logout() { //Class<? extends Page> expectedPageClass
         driver.findElement(menuItemLogout).click();
-        Page targetPage = null;
-        try {
-            targetPage = expectedPageClass.getConstructor(WebDriver.class).newInstance(driver);
-        } catch (Exception ex) {
-            throw new RuntimeException("Exception when using reflection: " + ex.getMessage());
-        }
-        return targetPage;
+        return new LoginPage(driver);
+//        Page targetPage = null;
+//        try {
+//            targetPage = expectedPageClass.getConstructor(WebDriver.class).newInstance(driver);
+//        } catch (Exception ex) {
+//            throw new RuntimeException("Exception when using reflection: " + ex.getMessage());
+//        }
+//        return targetPage;
     }
 }

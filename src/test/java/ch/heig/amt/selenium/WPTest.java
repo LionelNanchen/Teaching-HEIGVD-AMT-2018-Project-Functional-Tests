@@ -2,7 +2,9 @@ package ch.heig.amt.selenium;
 
 import ch.heig.amt.selenium.pages.*;
 import io.probedock.client.annotations.ProbeTest;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -17,6 +19,21 @@ public class WPTest {
     public void openBrowser() {
         System.setProperty("webdriver.chrome.driver", "/Applications/chromedriver");
         driver = new ChromeDriver();
+
+        itShouldBePossibleToRegister();
+    }
+
+
+    public void itShouldBePossibleToRegister() {
+        driver.get(baseUrl);
+        LoginPage loginPage = new LoginPage(driver);
+        RegisterPage registerPage = loginPage.goToRegisterPage();
+        registerPage.enterFirstname("John");
+        registerPage.enterLastname("Doe");
+        registerPage.enterEmail("john@doe.com");
+        registerPage.enterPassword("doejohn");
+        registerPage.enterConfirmPassword("doejohn");
+        registerPage.submitForm(ProfilePage.class);
     }
 
     //Test for Registration page
@@ -43,7 +60,7 @@ public class WPTest {
 
     @Test
     @ProbeTest(tags = "WebUI")
-    public void confirmPasswordMustBeTheSameAsPassword() {
+    public void toRegisterConfirmPasswordMustBeTheSameAsPassword() {
         driver.get(baseUrl);
         LoginPage loginPage = new LoginPage(driver);
         RegisterPage registerPage = loginPage.goToRegisterPage();
@@ -55,20 +72,6 @@ public class WPTest {
         registerPage.enterConfirmPassword("confirmPassword");
 
         registerPage.submitFormExpectingFailure();
-    }
-
-    @Test
-    @ProbeTest(tags = "WebUI")
-    public void itShouldBePossibleToRegister() {
-        driver.get(baseUrl);
-        LoginPage loginPage = new LoginPage(driver);
-        RegisterPage registerPage = loginPage.goToRegisterPage();
-        registerPage.enterFirstname("John");
-        registerPage.enterLastname("Doe");
-        registerPage.enterEmail("john@doe.com");
-        registerPage.enterPassword("doejohn");
-        registerPage.enterConfirmPassword("doejohn");
-        registerPage.submitForm(ProfilePage.class);
     }
 
     //Test for Login page
@@ -103,10 +106,23 @@ public class WPTest {
         loginPage.enterEmail("john@doe.com");
         loginPage.enterPassword("doejohn");
         ProfilePage profilePage = (ProfilePage) loginPage.submitForm(ProfilePage.class);
-        profilePage.logout(LoginPage.class);
+        profilePage.logout();
     }
 
     //Test for Application page
+
+    @Test
+    @ProbeTest(tags = "WebUI")
+    public void itShouldBePossibleToCreateAnApplication() {
+        driver.get(baseUrl);
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.enterEmail("john@doe.com");
+        loginPage.enterPassword("doejohn");
+        ProfilePage profilePage = (ProfilePage) loginPage.submitForm(ProfilePage.class);
+        ApplicationPage applicationPage = profilePage.goToApplicationPage();
+
+        applicationPage.createApplication("application name", "description");
+    }
 
     @Test
     @ProbeTest(tags = "WebUI")
@@ -120,11 +136,12 @@ public class WPTest {
 
         applicationPage.openCreateApplication();
         applicationPage.enterDescription("description");
+        applicationPage.expectingFailure();
     }
 
     @Test
     @ProbeTest(tags = "WebUI")
-    public void createDescriptionNameInputShouldNotBeEmtpy() {
+    public void createDescriptionInputShouldNotBeEmtpy() {
         driver.get(baseUrl);
         LoginPage loginPage = new LoginPage(driver);
         loginPage.enterEmail("john@doe.com");
@@ -134,11 +151,12 @@ public class WPTest {
 
         applicationPage.openCreateApplication();
         applicationPage.enterApplicationName("application name");
+        applicationPage.expectingFailure();
     }
 
     @Test
     @ProbeTest(tags = "WebUI")
-    public void updateApplicationNameInputShouldNotBeEmtpy() {
+    public void editApplicationNameInputShouldNotBeEmtpy() {
         driver.get(baseUrl);
         LoginPage loginPage = new LoginPage(driver);
         loginPage.enterEmail("john@doe.com");
@@ -147,12 +165,14 @@ public class WPTest {
         ApplicationPage applicationPage = profilePage.goToApplicationPage();
 
         applicationPage.openEditApplication();
+        applicationPage.clearInputs();
         applicationPage.enterDescription("description");
+        applicationPage.expectingFailure();
     }
 
     @Test
     @ProbeTest(tags = "WebUI")
-    public void updateDescriptionNameInputShouldNotBeEmtpy() {
+    public void editDescriptionNameInputShouldNotBeEmtpy() {
         driver.get(baseUrl);
         LoginPage loginPage = new LoginPage(driver);
         loginPage.enterEmail("john@doe.com");
@@ -161,13 +181,14 @@ public class WPTest {
         ApplicationPage applicationPage = profilePage.goToApplicationPage();
 
         applicationPage.openEditApplication();
+        applicationPage.clearInputs();
         applicationPage.enterApplicationName("application name");
+        applicationPage.expectingFailure();
     }
 
     @Test
     @ProbeTest(tags = "WebUI")
     public void scenario() {
-
         driver.get(baseUrl);
         //register
         LoginPage loginPage = new LoginPage(driver);
@@ -177,15 +198,17 @@ public class WPTest {
         registerPage.enterEmail("jane@doe.com");
         registerPage.enterPassword("doejane");
         registerPage.enterConfirmPassword("doejane");
-        loginPage = (LoginPage) registerPage.submitForm(LoginPage.class);
-        //login with new account
-        loginPage.enterEmail("an@email.com");
-        loginPage.enterPassword("password");
-        ProfilePage profilePage = (ProfilePage) loginPage.submitForm(ProfilePage.class);
+        ProfilePage profilePage = (ProfilePage) registerPage.submitForm(ProfilePage.class);
         //Create 25 applications
         ApplicationPage applicationPage = profilePage.goToApplicationPage();
         for (int i = 0; i < 25; ++i) {
             applicationPage.createApplication("Application" + i, "Description" + i);
         }
+
+        Assert.assertEquals(applicationPage.getApplications().size(), 25);
+
+        loginPage = applicationPage.logout();
+
+        driver.get(baseUrl + "/application");
     }
 }
