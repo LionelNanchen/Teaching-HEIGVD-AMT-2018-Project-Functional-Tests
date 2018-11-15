@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import java.io.File;
-import java.util.Random;
 
 public class WPTest {
     private String baseUrl = "http://localhost:8080/Gamification-WP1";
@@ -44,24 +43,24 @@ public class WPTest {
 
     //Test for Registration page
 
-    @Test
-    @ProbeTest(tags = "WebUI")
-    public void itShouldNotBePossibleToRegisterWithoutAllInputsFilled() {
-        Random random = new Random();
-        int i = random.nextInt(4);
+    public void tryRegister(String firstname, String lastname, String email, String password) {
         driver.get(baseUrl);
         LoginPage loginPage = new LoginPage(driver);
         RegisterPage registerPage = loginPage.goToRegisterPage();
+        registerPage.enterFirstname(firstname);
+        registerPage.enterLastname(lastname);
+        registerPage.enterEmail(email);
+        registerPage.enterPassword(password);
+        registerPage.enterConfirmPassword(password);
+    }
 
-        if (i != 0) registerPage.enterFirstname("firstname");
-        if (i != 1) registerPage.enterLastname("lastname");
-        if (i != 2) registerPage.enterEmail("an@email.com");
-        if (i != 3) {
-            registerPage.enterPassword("password");
-            registerPage.enterConfirmPassword("password");
-        }
-
-        registerPage.submitFormExpectingFailure();
+    @Test
+    @ProbeTest(tags = "WebUI")
+    public void itShouldNotBePossibleToRegisterWithoutAllInputsFilled() {
+        tryRegister("", "lastname", "an@email.com", "password");
+        tryRegister("firstname", "", "an@email.com", "password");
+        tryRegister("firstname", "lastname", "", "password");
+        tryRegister("firstname", "lastname", "an@email.com", "");
     }
 
     @Test
@@ -125,9 +124,9 @@ public class WPTest {
         loginPage.enterEmail("john@doe.com");
         loginPage.enterPassword("doejohn");
         ProfilePage profilePage = (ProfilePage) loginPage.submitForm(ProfilePage.class);
-        ApplicationsPage applicationPage = profilePage.goToApplicationPage();
+        ApplicationsPage applicationsPage = profilePage.goToApplicationPage();
 
-        applicationPage.createApplication("application name", "description");
+        applicationsPage.createApplication("application name", "description");
     }
 
     @Test
@@ -138,11 +137,11 @@ public class WPTest {
         loginPage.enterEmail("john@doe.com");
         loginPage.enterPassword("doejohn");
         ProfilePage profilePage = (ProfilePage) loginPage.submitForm(ProfilePage.class);
-        ApplicationsPage applicationPage = profilePage.goToApplicationPage();
+        ApplicationsPage applicationsPage = profilePage.goToApplicationPage();
 
-        applicationPage.openCreateApplication();
-        applicationPage.enterDescription("description");
-        applicationPage.expectingFailure();
+        applicationsPage.openCreateApplication();
+        applicationsPage.enterDescription("description");
+        applicationsPage.expectingFailure();
     }
 
     @Test
@@ -153,11 +152,11 @@ public class WPTest {
         loginPage.enterEmail("john@doe.com");
         loginPage.enterPassword("doejohn");
         ProfilePage profilePage = (ProfilePage) loginPage.submitForm(ProfilePage.class);
-        ApplicationsPage applicationPage = profilePage.goToApplicationPage();
+        ApplicationsPage applicationsPage = profilePage.goToApplicationPage();
 
-        applicationPage.openCreateApplication();
-        applicationPage.enterApplicationName("application name");
-        applicationPage.expectingFailure();
+        applicationsPage.openCreateApplication();
+        applicationsPage.enterApplicationName("application name");
+        applicationsPage.expectingFailure();
     }
 
     @Test
@@ -168,41 +167,9 @@ public class WPTest {
         loginPage.enterEmail("john@doe.com");
         loginPage.enterPassword("doejohn");
         ProfilePage profilePage = (ProfilePage) loginPage.submitForm(ProfilePage.class);
-        ApplicationsPage applicationPage = profilePage.goToApplicationPage();
+        ApplicationsPage applicationsPage = profilePage.goToApplicationPage();
 
-        applicationPage.editApplication("application name", "description");
-    }
-
-    @Test
-    @ProbeTest(tags = "WebUI")
-    public void editApplicationNameInputShouldNotBeEmtpy() {
-        driver.get(baseUrl);
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.enterEmail("john@doe.com");
-        loginPage.enterPassword("doejohn");
-        ProfilePage profilePage = (ProfilePage) loginPage.submitForm(ProfilePage.class);
-        ApplicationsPage applicationPage = profilePage.goToApplicationPage();
-
-        applicationPage.openEditApplication();
-        applicationPage.clearInputs();
-        applicationPage.enterDescription("description");
-        applicationPage.expectingFailure();
-    }
-
-    @Test
-    @ProbeTest(tags = "WebUI")
-    public void editApplicationDescriptionNameInputShouldNotBeEmtpy() {
-        driver.get(baseUrl);
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.enterEmail("john@doe.com");
-        loginPage.enterPassword("doejohn");
-        ProfilePage profilePage = (ProfilePage) loginPage.submitForm(ProfilePage.class);
-        ApplicationsPage applicationPage = profilePage.goToApplicationPage();
-
-        applicationPage.openEditApplication();
-        applicationPage.clearInputs();
-        applicationPage.enterApplicationName("application name");
-        applicationPage.expectingFailure();
+        applicationsPage.editApplication("application name", "description");
     }
 
     @Test
@@ -219,23 +186,24 @@ public class WPTest {
         registerPage.enterConfirmPassword("doejane");
         ProfilePage profilePage = (ProfilePage) registerPage.submitForm(ProfilePage.class);
         //Create 25 applications
-        ApplicationsPage applicationPage = profilePage.goToApplicationPage();
+        ApplicationsPage applicationsPage = profilePage.goToApplicationPage();
         for (int i = 0; i < 25; ++i) {
-            applicationPage.createApplication("Application" + i, "Description" + i);
+            applicationsPage.createApplication("Application" + i, "Description" + i);
         }
 
         //Assert if there is actually 10 applications in page 1
-        Assert.assertEquals(applicationPage.getApplications().size(), 10);
+        Assert.assertEquals(applicationsPage.getApplications().size(), 10);
 
         //Change page, verifiy if page 2 has 10 applications and page 3 only 5 and wait 1 second per page.
         for (int i = 1; i <= 2; ++i) {
-            applicationPage = applicationPage.nextPage();
-            Assert.assertEquals(applicationPage.getApplications().size(), 10/i);
+            applicationsPage = applicationsPage.nextPage();
+            Assert.assertEquals(applicationsPage.getApplications().size(), 10/i);
         }
 
         //copy the current URL, logout and try to go directly to the url (page 3 of applications)
         String url = driver.getCurrentUrl();
-        loginPage = applicationPage.logout();
+        loginPage = applicationsPage.logout();
         loginPage.goToUrl(url);
+        Assert.assertEquals(driver.getCurrentUrl(), "http://localhost:8080/Gamification-WP1/login");
     }
 }

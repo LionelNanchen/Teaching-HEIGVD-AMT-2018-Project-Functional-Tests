@@ -1,6 +1,4 @@
-# Teaching-HEIGVD-AMT-2018-Project-Functional-Tests
-
-Automated functional tests for the project Teaching-HEIGVD-AMT-2018-Project
+#Teaching-HEIGVD-AMT-2018-Project
 
 ##Automated functional tests
 
@@ -44,11 +42,15 @@ This test open to the register page and create a new user.
 
 #####itShouldNotBePossibleToRegisterWithoutAllInputsFilled
 
-This test go to the register page and try to register a new account but without filling all the inputs. The registration will fail and a message will indicate what the missing informations are.![itShouldNotBePossibleToRegisterWithoutAllInputsFilled](md_images/itShouldNotBePossibleToRegisterWithoutAllInputsFilled.png)
+This test open the register page and try to connect four time but will fail every time. It will filled all inputs but one (for the first time the firstname, for the second time the lastname, for the third time the email and for the last time the password and confirm password).
+
+This test call the function `tryRegister`.
+
+![itShouldNotBePossibleToRegisterWithoutAllInputsFilled](md_images/itShouldNotBePossibleToRegisterWithoutAllInputsFilled.png)
 
 ##### toRegisterConfirmPasswordMustBeTheSameAsPassword
 
-This test go to the register page and try to register a new account but without giving the same password for the password input and the confirm password input. The registration will fail and a message will indicate that it is recired to have the same informations for password and confirm password.
+This test open the register page and try to register a new account but without giving the same password for the password input and the confirm password input. The registration will fail and a message will indicate that it is recired to have the same informations for password and confirm password.
 
 ![toRegisterConfirmPasswordMustBeTheSameAsPassword](md_images/toRegisterConfirmPasswordMustBeTheSameAsPassword.png)
 
@@ -85,18 +87,6 @@ This test will login with a valid user, go to the application page and try to cr
 ##### itShouldBePossibleToEditAnApplication
 
 This test will login with a valid user, go to the application page and successfully edit the first application.
-
-##### editApplicationNameInputShouldNotBeEmtpy
-
-This test will login with a valid user, go to the application page and try to edit an application but without filling the application name input. The modification will fail and a message will appear and indicate that it need also an application name to successfully edit a new application.
-
-![createApplicationNameInputShouldNotBeEmtpy](md_images/createApplicationNameInputShouldNotBeEmtpy.png)
-
-##### editApplicationDescriptionNameInputShouldNotBeEmtpy
-
-This test will login with a valid user, go to the application page and try to edit an application but without filling the description input. The modification will fail and a message will appear and indicate that it need also a description to successfully edit a new application.
-
-![createApplicationDescriptionInputShouldNotBeEmtpy](md_images/createApplicationDescriptionInputShouldNotBeEmtpy.png)
 
 ##### scenario
 
