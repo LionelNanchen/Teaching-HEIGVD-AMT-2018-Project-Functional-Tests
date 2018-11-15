@@ -16,9 +16,9 @@ public class Page {
         this.driver = driver;
     }
 
-    public ApplicationPage goToApplicationPage() {
+    public ApplicationsPage goToApplicationPage() {
         driver.findElement(menuItemApplications).click();
-        return new ApplicationPage(driver);
+        return new ApplicationsPage(driver);
     }
 
     public ProfilePage goToProfilePage() {
@@ -31,15 +31,13 @@ public class Page {
         return new UsersPage(driver);
     }
 
-    public LoginPage logout() { //Class<? extends Page> expectedPageClass
+    public LoginPage goToUrl(String url) {
+        driver.get(url);
+        return new LoginPage(driver);
+    }
+
+    public LoginPage logout() {
         driver.findElement(menuItemLogout).click();
         return new LoginPage(driver);
-//        Page targetPage = null;
-//        try {
-//            targetPage = expectedPageClass.getConstructor(WebDriver.class).newInstance(driver);
-//        } catch (Exception ex) {
-//            throw new RuntimeException("Exception when using reflection: " + ex.getMessage());
-//        }
-//        return targetPage;
     }
 }
