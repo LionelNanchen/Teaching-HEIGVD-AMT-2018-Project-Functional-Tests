@@ -116,4 +116,4 @@ Lastly it logout and try to open directly the third applications page but is aut
 
 ### Results
 
-![functional_tests_result](/Users/lionelnanchen/Documents/HEIG-VD/Semestre_5/AMT/AMT_Laboratoires/Teaching-HEIGVD-AMT-2018-Project/md_images/functional_tests_result.png)
+![functional_tests_result](md_images/functional_tests_result.png)
